@@ -6,4 +6,5 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker
-      run: docker build --progress=plain -t oscar .
+      run: docker build -t oscar .
+
