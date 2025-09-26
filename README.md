@@ -18,3 +18,9 @@ cd src/sandbox
 
 python manage.py runserver
 
+
+
+Uso: 
+
+Visita /admin/
+
