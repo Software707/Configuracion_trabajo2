@@ -23,7 +23,7 @@ RUN find /app -name "*.sh" -exec dos2unix {} \;
 USER django
 WORKDIR /app
 
-# Dar permisos de ejecución a manage.py y scripts
+# Verificar y dar permisos de ejecución
 RUN [ -f src/sandbox/manage.py ] && chmod +x src/sandbox/manage.py || echo "manage.py no encontrado"
 RUN chmod +x scripts/*.sh || true
 
@@ -31,15 +31,12 @@ RUN chmod +x scripts/*.sh || true
 RUN make install || echo "make install falló"
 RUN make build_sandbox || cat /app/src/sandbox/logs/error.log || echo "make build_sandbox falló"
 
-# Copiar archivos necesarios y ajustar permisos
+# Copiar archivos necesarios y asegurar permisos
 RUN cp --remove-destination /app/src/oscar/static/oscar/img/image_not_found.jpg /app/src/sandbox/public/media/ || echo "Archivo image_not_found.jpg no encontrado"
 RUN chown -R django:django /app
 
+# Definir WORKDIR final
 WORKDIR /app/src/sandbox/
-
-# Comando por defecto
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
-
 
 # Comando por defecto
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
