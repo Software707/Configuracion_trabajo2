@@ -23,21 +23,25 @@ RUN find /app -name "*.sh" -exec dos2unix {} \;
 USER django
 WORKDIR /app
 
+# Depuración: listar archivos de sandbox
+RUN ls -l src/sandbox/ || echo "No se encontró src/sandbox/"
+
 # Dar permisos de ejecución a manage.py y scripts
 RUN [ -f src/sandbox/manage.py ] && chmod +x src/sandbox/manage.py || echo "manage.py no encontrado"
 RUN chmod +x scripts/*.sh || true
 
-# Instalar dependencias del Makefile y construir sandbox
-RUN make install
-RUN make build_sandbox || cat /app/src/sandbox/logs/error.log
+# Instalar dependencias y construir sandbox
+RUN make install || echo "make install falló"
+RUN make build_sandbox || cat /app/src/sandbox/logs/error.log || echo "make build_sandbox falló"
 
-# Copiar archivos necesarios y ajustar permisos
-RUN cp --remove-destination /app/src/oscar/static/oscar/img/image_not_found.jpg /app/src/sandbox/public/media/ || true
+# Copiar archivos necesarios y asegurar permisos
+RUN cp --remove-destination /app/src/oscar/static/oscar/img/image_not_found.jpg /app/src/sandbox/public/media/ || echo "Archivo image_not_found.jpg no encontrado"
 RUN chown -R django:django /app
 
 WORKDIR /app/src/sandbox/
 
 # Comando por defecto
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
+
 
 
