@@ -23,15 +23,16 @@ RUN find /app -name "*.sh" -exec dos2unix {} \;
 USER django
 WORKDIR /app
 
-# Dar permisos de ejecución a scripts y manage.py
-RUN chmod +x src/sandbox/manage.py
+# Verificar que manage.py existe y dar permisos
+RUN ls -l src/sandbox/
+RUN [ -f src/sandbox/manage.py ] && chmod +x src/sandbox/manage.py || echo "manage.py no encontrado"
 RUN chmod +x scripts/*.sh || true
 
 # Instalar dependencias y construir sandbox como usuario django
 RUN make install
 RUN make build_sandbox || cat /app/src/sandbox/logs/error.log
 
-# Copiar archivos necesarios
+# Copiar archivos necesarios y asegurar permisos
 RUN cp --remove-destination /app/src/oscar/static/oscar/img/image_not_found.jpg /app/src/sandbox/public/media/ || true
 
 WORKDIR /app/src/sandbox/
