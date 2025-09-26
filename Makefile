@@ -37,28 +37,28 @@ build_sandbox: sandbox_clean sandbox_load_user sandbox_load_data ## Creates a sa
 
 sandbox_clean: ## Clean sandbox images,cache,static and database
 	# Remove media
-	-rm -rf sandbox/public/media/images
-	-rm -rf sandbox/public/media/cache
-	-rm -rf sandbox/public/static
-	-rm -f sandbox/db.sqlite
+	-rm -rf src/sandbox/public/media/images
+	-rm -rf src/sandbox/public/media/cache
+	-rm -rf src/sandbox/public/static
+	-rm -f src/sandbox/db.sqlite
 	# Create database
-	sandbox/manage.py migrate
+	if [ -f src/sandbox/manage.py ]; then src/sandbox/manage.py migrate; fi
 
 sandbox_load_user: ## Load user data into sandbox
-	sandbox/manage.py loaddata sandbox/fixtures/auth.json
+	src/sandbox/manage.py loaddata src/sandbox/fixtures/auth.json
 
 sandbox_load_data: ## Import fixtures and collect static
 	# Import some fixtures. Order is important as JSON fixtures include primary keys
-	sandbox/manage.py loaddata sandbox/fixtures/child_products.json
-	sandbox/manage.py oscar_import_catalogue sandbox/fixtures/*.csv
-	sandbox/manage.py oscar_import_catalogue_images sandbox/fixtures/images.tar.gz
-	sandbox/manage.py oscar_populate_countries --initial-only
-	sandbox/manage.py loaddata sandbox/fixtures/pages.json sandbox/fixtures/ranges.json sandbox/fixtures/offers.json
-	sandbox/manage.py loaddata sandbox/fixtures/orders.json
-	sandbox/manage.py clear_index --noinput
-	sandbox/manage.py update_index catalogue
-	sandbox/manage.py thumbnail cleanup
-	sandbox/manage.py collectstatic --noinput
+	src/sandbox/manage.py loaddata src/sandbox/fixtures/child_products.json
+	src/sandbox/manage.py oscar_import_catalogue src/sandbox/fixtures/*.csv
+	src/sandbox/manage.py oscar_import_catalogue_images src/sandbox/fixtures/images.tar.gz
+	src/sandbox/manage.py oscar_populate_countries --initial-only
+	src/sandbox/manage.py loaddata src/sandbox/fixtures/pages.json src/sandbox/fixtures/ranges.json src/sandbox/fixtures/offers.json
+	src/sandbox/manage.py loaddata src/sandbox/fixtures/orders.json
+	src/sandbox/manage.py clear_index --noinput
+	src/sandbox/manage.py update_index catalogue
+	src/sandbox/manage.py thumbnail cleanup
+	src/sandbox/manage.py collectstatic --noinput
 
 sandbox_image: ## Build latest docker image of django-oscar-sandbox
 	docker build -t django-oscar-sandbox:latest .
@@ -81,13 +81,12 @@ lint:
 	@pylint setup.py src/oscar/
 	@pylint setup.py tests/
 
-
 black:
 	@black --exclude "migrations/*" src/oscar/
 	@black --exclude "migrations/*" tests/
 
 test_migrations: install-migrations-testing-requirements ## Tests migrations
-	cd sandbox && ./test_migrations.sh
+	cd src/sandbox && ./test_migrations.sh
 
 #######################
 # Translations Handling
