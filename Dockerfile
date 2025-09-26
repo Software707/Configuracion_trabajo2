@@ -14,6 +14,7 @@ WORKDIR /app
 RUN apt-get update -qq && apt-get install -y dos2unix && find /app -name "*.py" -exec dos2unix {} \; && find /app -name "*.sh" -exec dos2unix {} \;
 
 RUN make install
+RUN chmod +x src/sandbox/manage.py
 RUN make build_sandbox
 RUN cp --remove-destination /app/src/oscar/static/oscar/img/image_not_found.jpg /app/src/sandbox/public/media/
 RUN chown -R django:django /app
