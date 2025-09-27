@@ -18,6 +18,8 @@ cd src/sandbox
 
 python manage.py runserver
 
+### Cambio de prueba
+Este cambio se hizo en la rama feature/prueba-colaboracion.
 
 
 Uso: 
